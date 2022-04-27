@@ -25,8 +25,8 @@ def get_image(ros_img):
 def mask(image):
 	# constructs an image of a rectangle then ANDs it against the recieved image to cut out the background
 	filter = np.zeros((720, 1280), dtype="uint8")
-	start = (0, 160)
-	end = (750, 1280)
+	start = (150, 150)
+	end = (1000, 600)
 	cv2.rectangle(filter, start, end, (255, 255, 255), -1)
 	masked = cv2.bitwise_and(image, filter)
 	return masked
