@@ -4,7 +4,7 @@ import rospy
 import math
 import tf2_ros
 import tf2_geometry_msgs
-
+import std_msgs.msg import UInt8
 
 # import the plan message
 from ur5e_control.msg import Plan
@@ -31,15 +31,18 @@ def ball_check(bool):
 	#might need global for pause ball
 	pause_ball = bool
 
-def get_twist(x, y, z, roll, pitch, yaw):
+def get_twist(x, y, z, roll, pitch, yaw, grip = 0):
 	twist1 = Twist()
+	mode = UInt8()
+	
 	twist1.linear.x = x
 	twist1.linear.y = y
 	twist1.linear.z = z
 	twist1.angular.x = roll
 	twist1.angular.y = pitch
 	twist1.angular.z = yaw
-	return twist1
+	mode.data = grip
+	return twist1, mode
 
 def get_pose(pose):
 	global toolpose
@@ -131,13 +134,15 @@ if __name__ == '__main__':
 			plan.points.append(twist0)
 			
 			# above ball
-			twist1 = get_twist(base.point.x, base.point.y, base.point.z + ball.radius + 0.1, roll, pitch, yaw)
+			twist1, mode1 = get_twist(base.point.x, base.point.y, base.point.z + ball.radius + 0.1, roll, pitch, yaw, 1)
 			# add this point to the plan
 			plan.points.append(twist1)
+			plan.modes.append(mode1)
 			
-			twist2 = get_twist(base.point.x, base.point.y, base.point.z + ball.radius, roll, pitch, yaw)
+			twist2, mode2 = get_twist(base.point.x, base.point.y, base.point.z + ball.radius, roll, pitch, yaw, 2)
 			# add this point to the plan
 			plan.points.append(twist2)
+			plan.modes.append(mode2)
 			
 			# go back up
 			plan.points.append(twist1)
@@ -146,9 +151,10 @@ if __name__ == '__main__':
 			# add this point to the plan
 			plan.points.append(twist3)
 			
-			twist4 = get_twist(base.point.x + .2, base.point.y + .05, base.point.z + ball.radius, roll, pitch, yaw)
+			twist4, mode4 = get_twist(base.point.x + .2, base.point.y + .05, base.point.z + ball.radius, roll, pitch, yaw, 1)
 			# add this point to the plan
 			plan.points.append(twist4)
+			plan.modes.append(mode4)
 			
 			plan.points.append(twist3)
 			
