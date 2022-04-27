@@ -4,7 +4,7 @@ import rospy
 import math
 import tf2_ros
 import tf2_geometry_msgs
-import std_msgs.msg import UInt8
+from std_msgs.msg import UInt8
 
 # import the plan message
 from ur5e_control.msg import Plan
@@ -128,35 +128,50 @@ if __name__ == '__main__':
 			ix, iy, iz = init_pose.linear.x, init_pose.linear.y, init_pose.linear.z
 			# define a plan variable
 			plan = Plan()
-			
+			y_offset = -0.01
+			z_offset = 0.02
 			# initial robot pose 
-			twist0 = get_twist(ix, iy, iz , roll, pitch, yaw)
+			twist0, mode0 = get_twist(ix, iy, iz , roll, pitch, yaw)
 			plan.points.append(twist0)
+			plan.modes.append(mode0)
 			
 			# above ball
-			twist1, mode1 = get_twist(base.point.x, base.point.y, base.point.z + ball.radius + 0.1, roll, pitch, yaw, 1)
+			twist1, mode1 = get_twist(base.point.x, base.point.y+y_offset, base.point.z + 0.1, roll, pitch, yaw, 0)
 			# add this point to the plan
 			plan.points.append(twist1)
 			plan.modes.append(mode1)
 			
-			twist2, mode2 = get_twist(base.point.x, base.point.y, base.point.z + ball.radius, roll, pitch, yaw, 2)
+			twist2, mode2 = get_twist(base.point.x, base.point.y+y_offset, base.point.z + z_offset, roll, pitch, yaw, 0)
+			# add this point to the plan
+			plan.points.append(twist2)
+			plan.modes.append(mode2)
+			
+			twist2, mode2 = get_twist(base.point.x, base.point.y+y_offset, base.point.z + z_offset, roll, pitch, yaw, 2)
 			# add this point to the plan
 			plan.points.append(twist2)
 			plan.modes.append(mode2)
 			
 			# go back up
 			plan.points.append(twist1)
+			plan.modes.append(mode1)
 			
-			twist3 = get_twist(base.point.x + .2, base.point.y +.05, base.point.z + ball.radius + 0.1, roll, pitch, yaw)
+			twist3, mode3 = get_twist(base.point.x + .2, base.point.y +.05, base.point.z + 0.1, roll, pitch, yaw)
 			# add this point to the plan
 			plan.points.append(twist3)
+			plan.modes.append(mode3)
 			
-			twist4, mode4 = get_twist(base.point.x + .2, base.point.y + .05, base.point.z + ball.radius, roll, pitch, yaw, 1)
+			twist4, mode4 = get_twist(base.point.x + .2, base.point.y + .05, base.point.z + z_offset, roll, pitch, yaw, 0)
+			# add this point to the plan
+			plan.points.append(twist4)
+			plan.modes.append(mode4)
+			
+			twist4, mode4 = get_twist(base.point.x + .2, base.point.y + .05, base.point.z + z_offset, roll, pitch, yaw, 1)
 			# add this point to the plan
 			plan.points.append(twist4)
 			plan.modes.append(mode4)
 			
 			plan.points.append(twist3)
+			plan.modes.append(mode3)
 			
 			
 			if go:
